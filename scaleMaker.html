@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>jsColorScale Scale Maker</title>
+
+		<style type="text/css">
+			
+			#content {
+				display: flex;
+				width: 100%;
+				height: 400px;
+			}
+
+			#entry {
+				flex-grow: 1;
+			}
+
+			#textEntry {
+				width: 90%;
+				height: 100%;
+			}
+
+			#demo {
+				flex-grow: 1;
+			}
+
+			#scale {
+				width: 500px;
+				height: 50px;
+			}
+
+			#errorText {
+				color: #ff0000;
+			}
+		</style>
+
+		<script src="jsColorScale.js"></script>
+		<script>
+			var scaleTest = null;
+
+			function test() {
+				var enteredText = document.getElementById('textEntry').value;
+				var scaleArray = new Array();
+				var textOK = true;
+				var errorMessage = null;
+
+
+				var lines = enteredText.split('\n');
+				for (var i = 0; i < lines.length && textOK; i++) {
+					var fields = lines[i].split(',');
+					var index = fields[0];
+					var color = fields[1];
+
+					// Check the index
+					var parsedIndex = parseFloat(index);
+					if (isNaN(parsedIndex)) {
+						errorMessage = 'Invalid index ' + index;
+						textOK = false;
+						continue;
+					}
+
+					if (scaleArray.length > 0) {
+						var lastIndex = scaleArray[scaleArray.length - 1][0];
+						if (index < lastIndex) {
+							errorMessage = 'Index ' + parsedIndex + ' is not increasing';
+							textOK = false;
+							continue;
+						}
+					}
+
+					// Check that the index is increasing
+					if (!colorOK(color)) {
+						errorMessage = 'Invalid color ' + color;
+						textOK = false;
+						continue;
+					}
+
+					scaleArray[scaleArray.length] = [parsedIndex, color];
+				}
+
+				if (!textOK) {
+					document.getElementById('errorText').innerHTML = errorMessage;
+					document.getElementById('json').innerHTML = '';
+				} else {
+					document.getElementById('errorText').innerHTML = '';
+					
+					var arrayText = '[';
+					for (var i = 0; i < scaleArray.length; i++) {
+						arrayText += '[';
+						arrayText += scaleArray[i][0];
+						arrayText += ',';
+						arrayText += scaleArray[i][1];
+						arrayText += ']';
+						if (i < (scaleArray.length - 1)) {
+							arrayText += ',';
+						}
+					}
+					arrayText += ']';
+					document.getElementById('json').innerHTML = arrayText;
+
+
+					scaleTest = new ColorScale(scaleArray);
+					scaleTest.setValueRange(0, 1);
+					scaleTest.drawScale(document.getElementById('scale'));
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h1>jsColorScale Scale Maker</h1>
+		Use this page to create and test color scales.
+		<div id="content">
+			<div id="entry">
+				<textarea id="textEntry"></textarea>
+				<button onclick="test()">Test</button>
+			</div>
+			<div id="demo">
+				<div id="errorText">
+				</div>
+				<div id="json">
+				</div>
+				<div id="sample">
+					<canvas id="scale"></canvas>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
