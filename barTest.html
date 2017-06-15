@@ -6,16 +6,11 @@
 			#sampleHeader {
 				margin-left: 20px;
 			}
-			#sample {
+			#scale {
 				width: 750px;
 				height: 100px;
 				margin-left: 20px;
 				border: 1px solid #aaaaaa;
-			}
-
-			#scale {
-				width: 100%;
-				height: 100%;
 			}
 		</style>
 		<script src="jsColorScale.js"></script>
@@ -31,8 +26,6 @@
 					var options = new Array();
 					options['outliers'] = $('input[name=triangle]:checked', '#scaleForm').val();
 					options['outlierSize'] = $('#outlierSize').val();
-
-
 
 					scale.drawScale(document.getElementById('scale'), options);
 			    } catch (e) {
@@ -55,7 +48,7 @@
 			<input type="radio" name="triangle" value="b" checked/> Both
 			<br/>
 			Outlier size:
-			<input type="text" id="outlierSize" name="outlierSize" value="50">
+			<input type="text" id="outlierSize" name="outlierSize" value="20">
 
 			<br/>
 			<br/>
@@ -68,8 +61,7 @@
 			<div id="sampleHeader">
 				Color bar will go here:
 			</div>
-			<div id="sample">
-				<canvas id="scale"></canvas>
+			<div id="scale">
 			</div>
 
 		</form>

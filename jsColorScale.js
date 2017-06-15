@@ -13,8 +13,15 @@ function ColorScale(scaleArray) {
 		this.maxValue = max;
 	}
 
-	this.drawScale = function(canvas, options) {
+	this.drawScale = function(scaleContainer, options) {
 		
+		var container = $(scaleContainer);
+		var canvasElement = $('<canvas>', {style: "width: 100%; height: 100%;"});
+
+		var canvas = canvasElement[0];
+
+
+
 		var ctx = canvas.getContext('2d');
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -36,7 +43,6 @@ function ColorScale(scaleArray) {
 
 			ctx.fillStyle = this.getColor((point1 - this.barStart) / this.barWidth);
 			ctx.fillRect(point1, 0, point2, canvas.height);
-
 		}
 		ctx.clearRect(this.barEnd + 1, 0, canvas.width, canvas.height);
 
@@ -59,7 +65,9 @@ function ColorScale(scaleArray) {
 			ctx.fillStyle = scaleArray[scaleArray.length - 1][1];
 			ctx.fill();
 		}
-	}
+
+		container.append(canvasElement);
+  	}
 
 	this.getColor = function(value) {
 		
