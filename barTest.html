@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>jsColorScale Color bar tester</title>
+		<style>
+			#sampleHeader {
+				margin-left: 20px;
+			}
+			#sample {
+				width: 750px;
+				height: 100px;
+				margin-left: 20px;
+				border: 1px solid #aaaaaa;
+			}
+
+			#scale {
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+		<script src="jsColorScale.js"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script>
+			function drawBar() {
+				
+				try {
+					var scaleDef = JSON.parse($('#scaleData').val());
+
+					var scale = new ColorScale(scaleDef);
+
+					var options = new Array();
+					options['outliers'] = $('input[name=triangle]:checked', '#scaleForm').val();
+					options['outlierSize'] = $('#outlierSize').val();
+
+
+
+					scale.drawScale(document.getElementById('scale'), options);
+			    } catch (e) {
+			    	console.log(e);
+			    }
+
+				return false;
+			}
+		</script>
+	</head>
+	<body>
+		<form id="scaleForm">
+			Color scale definition:
+			<input id="scaleData" type="text" name="colorScale" size="150" value='[[0,"#FF0000"],[0.25,"#FFFF00"],[0.5,"#FFFFFF"],[0.75,"#0000FF"],[1,"#00DD00"]]'/>
+			<br/>
+			Outlier triangles:
+			<input type="radio" name="triangle" value="n"/> None
+			<input type="radio" name="triangle" value="l"/> Left
+			<input type="radio" name="triangle" value="r"/> Right
+			<input type="radio" name="triangle" value="b" checked/> Both
+			<br/>
+			Outlier size:
+			<input type="text" id="outlierSize" name="outlierSize" value="50">
+
+			<br/>
+			<br/>
+			<button onclick="drawBar(); return false;">Draw color bar</button>
+
+			<br/>
+			<br/>
+			<br/>
+			<br/>
+			<div id="sampleHeader">
+				Color bar will go here:
+			</div>
+			<div id="sample">
+				<canvas id="scale"></canvas>
+			</div>
+
+		</form>
+	</body>
+</html>
