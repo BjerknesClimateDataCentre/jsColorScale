@@ -66,7 +66,7 @@ function ColorScale(scaleArray) {
 			ctx.fill();
 		}
 
-		container.append(canvasElement);
+		container.html(canvasElement);
   	}
 
 	this.getColor = function(value) {
