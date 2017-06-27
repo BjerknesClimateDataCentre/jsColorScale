@@ -21,6 +21,8 @@
 					var scaleDef = JSON.parse($('#scaleData').val());
 
 					var scale = new ColorScale(scaleDef);
+					scale.setValueRange($('#scaleMin').val(), $('#scaleMax').val());
+					scale.setFont("Verdana", 15);
 
 					var options = new Array();
 					options['outliers'] = $('input[name=triangle]:checked', '#scaleForm').val();
@@ -48,6 +50,10 @@
 			<br/>
 			Outlier size:
 			<input type="text" id="outlierSize" name="outlierSize" value="5">
+			<br/>
+			Scale range:
+			<input type="text" id="scaleMin" name="scaleMin" value="250"/>
+			<input type="text" id="scaleMax" name="scaleMax" value="400"/>
 
 			<br/>
 			<br/>

@@ -8,9 +8,17 @@ function ColorScale(scaleArray) {
 	this.minValue = this.scaleMinIndex;
 	this.maxValue = this.scaleMaxIndex;
 
+	this.font = "sans-serif";
+	this.fontSize = "14px";
+
 	this.setValueRange = function(min, max) {
-		this.minValue = min;
-		this.maxValue = max;
+		this.minValue = parseFloat(min);
+		this.maxValue = parseFloat(max);
+	}
+
+	this.setFont = function(font, size) {
+		this.font = font;
+		this.fontSize = size;
 	}
 
 	this.oldDrawScale = function(scaleContainer, options) {
@@ -127,13 +135,13 @@ function ColorScale(scaleArray) {
 		svg += '</svg>';
 
 		svg += '<rect fill="#000000" x="' + (outlierSize + 1) + '%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="' + (outlierSize + 1.5) + '%" y="100%">' + this.percentToRangeValue(0) + '</text>';
+		svg += '<text fill="#000000" x="' + (outlierSize + 1.5) + '%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + this.percentToRangeValue(0) + '</text>';
 
 		svg += '<rect fill="#000000" x="49.825%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="50.25%" y="100%">' + this.percentToRangeValue(50) + '</text>';
+		svg += '<text fill="#000000" x="50.25%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + this.percentToRangeValue(50) + '</text>';
 
 		svg += '<rect fill="#000000" x="' + (100 - (outlierSize + 1.25)) + '%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="' + (100 - (outlierSize + 1.5)) + '%" y="100%" text-anchor="end">' + this.percentToRangeValue(100) + '</text>';
+		svg += '<text fill="#000000" x="' + (100 - (outlierSize + 1.5)) + '%" y="100%"  font-family="' + this.font + '" font-size="' + this.fontSize + '" text-anchor="end">' + this.percentToRangeValue(100) + '</text>';
 
 		svg += '</svg>';
 
