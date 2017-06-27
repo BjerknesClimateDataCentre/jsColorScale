@@ -13,7 +13,7 @@ function ColorScale(scaleArray) {
 		this.maxValue = max;
 	}
 
-	this.drawScale = function(scaleContainer, options) {
+	this.oldDrawScale = function(scaleContainer, options) {
 		
 		var container = $(scaleContainer);
 		var canvasElement = $('<canvas>', {style: "width: 100%; height: 100%;"});
@@ -69,6 +69,79 @@ function ColorScale(scaleArray) {
 		container.html(canvasElement);
   	}
 
+
+	this.drawScale = function(scaleContainer, options) {		
+		var container = $(scaleContainer);
+
+		var outlierSize = parseInt(options['outlierSize']);
+
+		var svg = '<svg width="100%" height="100%">';
+
+		svg += '<linearGradient id="scaleGradient">';
+		for (var i = 0; i < scaleArray.length; i++) {
+			var percentage = (this.scaleArray[i][0] - this.scaleMinIndex) / (this.scaleMaxIndex - this.scaleMinIndex) * 100;
+			svg += '<stop offset="' + percentage + '%" stop-color="' + this.scaleArray[i][1] + '"/>';
+		}
+		svg += '</linearGradient>';
+
+		svg += '<svg width="100%" height="80%">';
+
+		if (options['outliers'] == 'l' || options['outliers'] == 'b') {
+			svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet">';
+			svg += '<polygon transform="scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[0][1] + '" points="0,50 8.4,0 8.4,100"/>';
+			svg += '</svg>';
+		}
+
+		if (options['outliers'] == 'r' || options['outliers'] == 'b') {
+			svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">';
+			svg += '<polygon transform="rotate(180 50 50) scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[this.scaleArray.length - 1][1] + '" points="0,50 8.4,0 8.4,100"/>';
+			svg += '</svg>';
+		}
+
+		var barStart = 0;
+		var barWidth = 100;
+
+		if (options['outliers'] == 'l' || options['outliers'] == 'b') {
+			barStart = outlierSize + 1;
+		}
+
+		switch (options['outliers']) {
+		case 'l': {
+			barStart = outlierSize + 1;
+			barWidth = 100 - (outlierSize + 1);
+			break;
+		}
+		case 'r': {
+			barWidth = 100 - (outlierSize + 1);
+			break;
+		}
+		case 'b': {
+			barStart = outlierSize + 1;
+			barWidth = 100 - (outlierSize * 2 + 2);
+			break;
+		}
+		}
+
+		svg += '<rect fill="url(#scaleGradient)" x="' + barStart + '%" y="0%" width="' + barWidth + '%" height="100%"/>';
+
+		svg += '</svg>';
+
+		svg += '<rect fill="#000000" x="' + (outlierSize + 1) + '%" y="80%" width="0.25%" height="30%"/>';
+		svg += '<text fill="#000000" x="' + (outlierSize + 1.5) + '%" y="100%">' + this.percentToRangeValue(0) + '</text>';
+
+		svg += '<rect fill="#000000" x="49.825%" y="80%" width="0.25%" height="30%"/>';
+		svg += '<text fill="#000000" x="50.25%" y="100%">' + this.percentToRangeValue(50) + '</text>';
+
+		svg += '<rect fill="#000000" x="' + (100 - (outlierSize + 1.25)) + '%" y="80%" width="0.25%" height="30%"/>';
+		svg += '<text fill="#000000" x="' + (100 - (outlierSize + 1.5)) + '%" y="100%" text-anchor="end">' + this.percentToRangeValue(100) + '</text>';
+
+		svg += '</svg>';
+
+
+		container.html(svg);
+	}
+
+
 	this.getColor = function(value) {
 		
 		var result = null;
@@ -97,6 +170,16 @@ function ColorScale(scaleArray) {
 		}
 
 		return result;
+	}
+
+	this.percentToRangeValue = function(percentage) {
+		if (percentage < 0) {
+			percentage = 0;
+		} else if (percentage > 100) {
+			percentage = 100;
+		}
+
+		return this.minValue + (this.maxValue - this.minValue) * (percentage / 100);
 	}
 
 	this.interpolateColorComponent = function(preValue, postValue, proportion) {
