@@ -27,6 +27,7 @@
 					var options = new Array();
 					options['outliers'] = $('input[name=triangle]:checked', '#scaleForm').val();
 					options['outlierSize'] = $('#outlierSize').val();
+					options['decimalPlaces'] = 2;
 
 					scale.drawScale(document.getElementById('svgScale'), options);
 			    } catch (e) {
