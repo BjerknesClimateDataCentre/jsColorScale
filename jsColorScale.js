@@ -28,7 +28,9 @@ function ColorScale(scaleArray) {
 
 		var svg = '<svg width="100%" height="100%">';
 
-		svg += '<linearGradient id="scaleGradient">';
+		var gradientId = 'scaleGradient' + window.performance.now();
+		
+		svg += '<linearGradient id="' + gradientId + '">';
 		for (var i = 0; i < scaleArray.length; i++) {
 			var percentage = (this.scaleArray[i][0] - this.scaleMinIndex) / (this.scaleMaxIndex - this.scaleMinIndex) * 100;
 			svg += '<stop offset="' + percentage + '%" stop-color="' + this.scaleArray[i][1] + '"/>';
@@ -73,7 +75,7 @@ function ColorScale(scaleArray) {
 		}
 		}
 
-		svg += '<rect fill="url(#scaleGradient)" x="' + barStart + '%" y="0%" width="' + barWidth + '%" height="100%"/>';
+		svg += '<rect fill="url(#' + gradientId + ')" x="' + barStart + '%" y="0%" width="' + barWidth + '%" height="100%"/>';
 
 		svg += '</svg>';
 
