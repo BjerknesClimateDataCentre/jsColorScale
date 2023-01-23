@@ -2,189 +2,192 @@
 
 function ColorScale(scaleArray) {
 
-	this.scaleArray = scaleArray;
-	this.scaleMinIndex = scaleArray[0][0];
-	this.scaleMaxIndex = scaleArray[scaleArray.length - 1][0];
-	this.minValue = this.scaleMinIndex;
-	this.maxValue = this.scaleMaxIndex;
+  this.scaleArray = scaleArray;
+  this.scaleMinIndex = scaleArray[0][0];
+  this.scaleMaxIndex = scaleArray[scaleArray.length - 1][0];
+  this.minValue = this.scaleMinIndex;
+  this.maxValue = this.scaleMaxIndex;
 
-	this.font = "sans-serif";
-	this.fontSize = "14px";
+  this.font = "sans-serif";
+  this.fontSize = "14px";
 
-	this.setValueRange = function(min, max) {
-		this.minValue = parseFloat(min);
-		this.maxValue = parseFloat(max);
-	}
+  this.setValueRange = function(min, max) {
+    this.minValue = parseFloat(min);
+    this.maxValue = parseFloat(max);
+  }
 
-	this.setFont = function(font, size) {
-		this.font = font;
-		this.fontSize = size;
-	}
+  this.setFont = function(font, size) {
+    this.font = font;
+    this.fontSize = size;
+  }
 
-	this.drawScale = function(scaleContainer, options) {		
-		var container = $(scaleContainer);
+  this.drawScale = function(scaleContainer, options) {
+    let container = $(scaleContainer);
+    container.html('');
 
-		var outlierSize = parseInt(options['outlierSize']);
+    let outlierSize = parseInt(options['outlierSize']);
 
-		var svg = '<svg width="100%" height="100%">';
+    let svg = '<svg width="100%" height="100%">';
 
-		var gradientId = 'scaleGradient' + window.performance.now();
-		
-		svg += '<linearGradient id="' + gradientId + '">';
-		for (var i = 0; i < scaleArray.length; i++) {
-			var percentage = (this.scaleArray[i][0] - this.scaleMinIndex) / (this.scaleMaxIndex - this.scaleMinIndex) * 100;
-			svg += '<stop offset="' + percentage + '%" stop-color="' + this.scaleArray[i][1] + '"/>';
-		}
-		svg += '</linearGradient>';
+    let gradientId = 'scaleGradient' + window.performance.now();
 
-		svg += '<svg width="100%" height="80%">';
+    let mainBarHeight = '70%';
 
-		if (options['outliers'] == 'l' || options['outliers'] == 'b') {
-			svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet">';
-			svg += '<polygon transform="scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[0][1] + '" points="0,50 8.4,0 8.4,100"/>';
-			svg += '</svg>';
-		}
+    svg += '<linearGradient id="' + gradientId + '">';
+    for (let i = 0; i < scaleArray.length; i++) {
+      let percentage = (this.scaleArray[i][0] - this.scaleMinIndex) / (this.scaleMaxIndex - this.scaleMinIndex) * 100;
+      svg += '<stop offset="' + percentage + '%" stop-color="' + this.scaleArray[i][1] + '"/>';
+    }
+    svg += '</linearGradient>';
 
-		if (options['outliers'] == 'r' || options['outliers'] == 'b') {
-			svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">';
-			svg += '<polygon transform="rotate(180 50 50) scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[this.scaleArray.length - 1][1] + '" points="0,50 8.4,0 8.4,100"/>';
-			svg += '</svg>';
-		}
+    svg += '<svg width="100%" height="' + mainBarHeight + '">';
 
-		var barStart = 0;
-		var barWidth = 100;
+    if (options['outliers'] == 'l' || options['outliers'] == 'b') {
+      svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMinYMin meet">';
+      svg += '<polygon transform="scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[0][1] + '" points="0,50 8.4,0 8.4,100"/>';
+      svg += '</svg>';
+    }
 
-		if (options['outliers'] == 'l' || options['outliers'] == 'b') {
-			barStart = outlierSize + 1;
-		}
+    if (options['outliers'] == 'r' || options['outliers'] == 'b') {
+      svg += '<svg viewBox="0 0 100 100" preserveAspectRatio="xMaxYMax meet">';
+      svg += '<polygon transform="rotate(180 50 50) scale(' + outlierSize + ' 1)" fill="' + this.scaleArray[this.scaleArray.length - 1][1] + '" points="0,50 8.4,0 8.4,100"/>';
+      svg += '</svg>';
+    }
 
-		switch (options['outliers']) {
-		case 'l': {
-			barStart = outlierSize + 1;
-			barWidth = 100 - (outlierSize + 1);
-			break;
-		}
-		case 'r': {
-			barWidth = 100 - (outlierSize + 1);
-			break;
-		}
-		case 'b': {
-			barStart = outlierSize + 1;
-			barWidth = 100 - (outlierSize * 2 + 2);
-			break;
-		}
-		}
+    let barStart = 0;
+    let barWidth = 100;
 
-		svg += '<rect fill="url(#' + gradientId + ')" x="' + barStart + '%" y="0%" width="' + barWidth + '%" height="100%"/>';
+    if (options['outliers'] == 'l' || options['outliers'] == 'b') {
+      barStart = outlierSize + 1;
+    }
 
-		svg += '</svg>';
+    switch (options['outliers']) {
+    case 'l': {
+      barStart = outlierSize + 1;
+      barWidth = 100 - (outlierSize + 1);
+      break;
+    }
+    case 'r': {
+      barWidth = 100 - (outlierSize + 1);
+      break;
+    }
+    case 'b': {
+      barStart = outlierSize + 1;
+      barWidth = 100 - (outlierSize * 2 + 2);
+      break;
+    }
+    }
 
-		var lowValue = (Math.round(this.percentToRangeValue(0) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
-		var midValue = (Math.round(this.percentToRangeValue(50) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
-		var highValue = (Math.round(this.percentToRangeValue(100) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
+    svg += '<rect fill="url(#' + gradientId + ')" x="' + barStart + '%" y="0%" width="' + barWidth + '%" height="100%"/>';
 
-		svg += '<rect fill="#000000" x="' + (outlierSize + 1) + '%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="' + (outlierSize + 1.5) + '%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + lowValue + '</text>';
+    svg += '</svg>';
 
-		svg += '<rect fill="#000000" x="49.825%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="50.25%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + midValue + '</text>';
+    let lowValue = (Math.round(this.percentToRangeValue(0) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
+    let midValue = (Math.round(this.percentToRangeValue(50) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
+    let highValue = (Math.round(this.percentToRangeValue(100) * (Math.pow(10, options['decimalPlaces']))) / Math.pow(10, options['decimalPlaces'])).toFixed(2);
 
-		svg += '<rect fill="#000000" x="' + (100 - (outlierSize + 1.25)) + '%" y="80%" width="0.25%" height="30%"/>';
-		svg += '<text fill="#000000" x="' + (100 - (outlierSize + 1.5)) + '%" y="100%"  font-family="' + this.font + '" font-size="' + this.fontSize + '" text-anchor="end">' + highValue + '</text>';
+    svg += '<rect fill="#000000" x="' + (barStart) + '%" y="' + mainBarHeight + '" width="0.25%" height="30%"/>';
+    svg += '<text fill="#000000" x="' + (barStart + 1) + '%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + lowValue + '</text>';
 
-		svg += '</svg>';
+    svg += '<rect fill="#000000" x="49.825%" y="' + mainBarHeight + '" width="0.25%" height="30%"/>';
+    svg += '<text fill="#000000" x="51%" y="100%" font-family="' + this.font + '" font-size="' + this.fontSize + '">' + midValue + '</text>';
 
+    svg += '<rect fill="#000000" x="' + (99.75 - barStart) + '%" y="' + mainBarHeight + '" width="0.25%" height="30%"/>';
+    svg += '<text fill="#000000" x="' + (100 - (barStart + 1)) + '%" y="100%"  font-family="' + this.font + '" font-size="' + this.fontSize + '" text-anchor="end">' + highValue + '</text>';
 
-		container.html(svg);
-	}
+    svg += '</svg>';
 
 
-	this.getColor = function(value) {
-		
-		var result = null;
+    container.html(svg);
+  }
 
-		if (value < this.minValue) {
-			value = this.minValue;
-		} else if (value > this.maxValue) {
-			value = this.maxValue;
-		}
 
-		var valueProportion = (value - this.minValue) / (this.maxValue - this.minValue);
-		var scaleValue = this.scaleMinIndex + (this.scaleMaxIndex - this.scaleMinIndex) * valueProportion;
+  this.getColor = function(value) {
 
-		var preColor = this.getColorBefore(scaleValue);
-		var postColor = this.getColorAfter(scaleValue);
+    let result = null;
 
-		if (preColor[0] == postColor[0]) {
-			result = preColor[1];
-		} else {
-			var colorProportion = (scaleValue - preColor[0]) / (postColor[0] - preColor[0]);
-			var redValue = this.interpolateColorComponent(preColor[1].substring(1,3), postColor[1].substring(1,3), colorProportion);
-			var greenValue = this.interpolateColorComponent(preColor[1].substring(3,5), postColor[1].substring(3,5), colorProportion);
-			var blueValue = this.interpolateColorComponent(preColor[1].substring(5), postColor[1].substring(5), colorProportion);
+    if (value < this.minValue) {
+      value = this.minValue;
+    } else if (value > this.maxValue) {
+      value = this.maxValue;
+    }
 
-			result = '#' + redValue + greenValue + blueValue;
-		}
+    let valueProportion = (value - this.minValue) / (this.maxValue - this.minValue);
+    let scaleValue = this.scaleMinIndex + (this.scaleMaxIndex - this.scaleMinIndex) * valueProportion;
 
-		return result;
-	}
+    let preColor = this.getColorBefore(scaleValue);
+    let postColor = this.getColorAfter(scaleValue);
 
-	this.percentToRangeValue = function(percentage) {
-		if (percentage < 0) {
-			percentage = 0;
-		} else if (percentage > 100) {
-			percentage = 100;
-		}
+    if (preColor[0] == postColor[0]) {
+      result = preColor[1];
+    } else {
+      let colorProportion = (scaleValue - preColor[0]) / (postColor[0] - preColor[0]);
+      let redValue = this.interpolateColorComponent(preColor[1].substring(1,3), postColor[1].substring(1,3), colorProportion);
+      let greenValue = this.interpolateColorComponent(preColor[1].substring(3,5), postColor[1].substring(3,5), colorProportion);
+      let blueValue = this.interpolateColorComponent(preColor[1].substring(5), postColor[1].substring(5), colorProportion);
 
-		return this.minValue + (this.maxValue - this.minValue) * (percentage / 100);
-	}
+      result = '#' + redValue + greenValue + blueValue;
+    }
 
-	this.interpolateColorComponent = function(preValue, postValue, proportion) {
-		var preNumber = parseInt(preValue, 16);
-		var postNumber = parseInt(postValue, 16);
+    return result;
+  }
 
-		var interpNumber = Math.round(preNumber + (postNumber - preNumber) * proportion).toString(16);
-		if (interpNumber.length == 1) {
-			interpNumber = '0' + interpNumber;
-		}
+  this.percentToRangeValue = function(percentage) {
+    if (percentage < 0) {
+      percentage = 0;
+    } else if (percentage > 100) {
+      percentage = 100;
+    }
 
-		return interpNumber;
-	}
+    return this.minValue + (this.maxValue - this.minValue) * (percentage / 100);
+  }
 
-	this.getColorBefore = function(scaleValue) {
-		var result = null;
-		for (var i = 0; i < this.scaleArray.length; i++) {
-			if (this.scaleArray[i][0] <= scaleValue) {
-				result = this.scaleArray[i];
-			} else {
-				break;
-			}
-		}
+  this.interpolateColorComponent = function(preValue, postValue, proportion) {
+    let preNumber = parseInt(preValue, 16);
+    let postNumber = parseInt(postValue, 16);
 
-		if (result == null) {
-			result = this.scaleArray[0];
-		}
+    let interpNumber = Math.round(preNumber + (postNumber - preNumber) * proportion).toString(16);
+    if (interpNumber.length == 1) {
+      interpNumber = '0' + interpNumber;
+    }
 
-		return result;
-	}
+    return interpNumber;
+  }
 
-	this.getColorAfter = function(scaleValue) {
-		var result = null;
-		for (var i = 0; i < this.scaleArray.length; i++) {
-			if (this.scaleArray[i][0] > scaleValue) {
-				result = this.scaleArray[i];
-				break;
-			}
-		}
+  this.getColorBefore = function(scaleValue) {
+    let result = null;
+    for (let i = 0; i < this.scaleArray.length; i++) {
+      if (this.scaleArray[i][0] <= scaleValue) {
+        result = this.scaleArray[i];
+      } else {
+        break;
+      }
+    }
 
-		if (result == null) {
-			result = this.scaleArray[scaleArray.length - 1];
-		}
+    if (result == null) {
+      result = this.scaleArray[0];
+    }
 
-		return result;
-	}
+    return result;
+  }
+
+  this.getColorAfter = function(scaleValue) {
+    let result = null;
+    for (let i = 0; i < this.scaleArray.length; i++) {
+      if (this.scaleArray[i][0] > scaleValue) {
+        result = this.scaleArray[i];
+        break;
+      }
+    }
+
+    if (result == null) {
+      result = this.scaleArray[scaleArray.length - 1];
+    }
+
+    return result;
+  }
 }
 
 function colorOK(color) {
-	return /^#[0-9A-F]{6}$/i.test(color);
+  return /^#[0-9A-F]{6}$/i.test(color);
 }
